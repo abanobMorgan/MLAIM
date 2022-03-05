@@ -1,6 +1,5 @@
 import json
-import pandas as pd 
-import numpy as np 
+import pandas as pd
 import requests
 import time
 
@@ -13,7 +12,7 @@ ids= list(ids)
 x = open("../data/output1.txt","w", encoding="UTF-8")
 
 url = 'https://recruitment.aimtechnologies.co/ai-tasks'
-for i in range(0,len(ids),1000):
+for i in range(0,len(ids),441):
     payload = ids[i:i+1]
     data=json.dumps(payload)
     time.sleep(2)  
