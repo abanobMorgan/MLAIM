@@ -22,7 +22,7 @@ for i in range(0,len(ids),1000):
         data =eval(r.text) 
         for key, value in data.items(): 
             value = re.sub(r",",'',value)
-            value = re.sub(r"\s+",'',value)
+            value = re.sub(r"\s+",' ',value)
             x.write('%s,%s\n' % (key, value))
     else : 
         print(f"error in id = : {i}")
