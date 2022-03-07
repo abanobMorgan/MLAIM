@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import re
+import tashaphyne.arabic_const as arabconst
 
 
 def getData():
