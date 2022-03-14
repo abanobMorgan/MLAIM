@@ -77,7 +77,7 @@ def data_fit_transform(X_train,X_val,X_test):
 
   return train_X, val_X, test_X, vectr
 
-def data_fit(X, vec): 
+def data_transform(X, vec): 
   """
   inputs: 
     X: the features that will be used for predicting 
@@ -160,6 +160,3 @@ def saveVectorizer(vectorizer, filePath):
   
   print(f"model saved in {filePath}")
 
-"""
-test_z = vectr.transform([" احنا بيقنا الصبح استاذ مجدي يومك بيضحك"])
-print(model.predict(test_z))"""

@@ -68,7 +68,6 @@ def clean(text):
     clean_text = re.sub('\s+', " ", clean_text, flags=re.UNICODE)
     return clean_text
 
-
 def eliminate_single_char_words(text):
     """
     input: 
@@ -86,7 +85,6 @@ def eliminate_single_char_words(text):
     cleaned_line = ' '.join(cleaned_line_parts)
     return cleaned_line
 
-
 def ReplaceThreeOrMore(text):
     """
     input: 
@@ -100,8 +98,6 @@ def ReplaceThreeOrMore(text):
     # newlines.
     pattern = re.compile(r"(.)\1{2,}", re.DOTALL)
     return pattern.sub(r"\1\1", text)
-
-
 
 def mergeData(df1): 
     """
