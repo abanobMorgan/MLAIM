@@ -1,13 +1,15 @@
 
-import re 
+import re
+import string 
 from nltk.stem.isri import ISRIStemmer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.tokenize import wordpunct_tokenize
 import tashaphyne.arabic_const as arabconst
 import pandas as pd 
 import pickle   
+import string
 
-def remove_stopword(text, stopwords_list):  
+def remove_stopword(text: str, stopwords_list:pd.Series) -> str:
     """
     input: 
         text: string  

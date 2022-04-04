@@ -3,7 +3,6 @@ import pickle
 import pandas as pd
 from flask import Flask, request, jsonify
 import clean_preprocess_main
-import numpy as np 
 
 
 def predictTextValML(data): 

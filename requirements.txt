@@ -63,3 +63,4 @@ Werkzeug==2.0.3
 wrapt==1.14.0
 WTForms==3.0.1
 zipp==3.7.0
+gensim==4.1.2

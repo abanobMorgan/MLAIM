@@ -4,6 +4,11 @@ import LogisticRegression
 import pandas as pd 
 import BILSTM
 
+from tensorflow.keras.callbacks import ReduceLROnPlateau, EarlyStopping
+from gensim.models import word2vec
+import word2vector
+import pickle
+
 def fetech_clean_preprocess():
   """
   this function call some fuction for fetch the data and clean it then preprocess it 
@@ -12,12 +17,12 @@ def fetech_clean_preprocess():
   """
   datafetching.fetch()
   clean_preprocess_main.run()
+
 def ML(): 
     """
     thif function works as run for the machine learing model
     """
-    
-
+  
     df = pd.read_csv("../data/balance_data.txt")
     df.dropna(inplace=True) 
     
@@ -38,55 +43,62 @@ def ML():
     LogisticRegression.saveVectorizer(vectorizer, vectorizerpath)    
 
 def DL(): 
-
-    
-  df = pd.read_csv("../data/balance_data.txt")
-  df.dropna(inplace=True)
-
-  #np.mean(df.text.map(str).apply(len))
-
-  max_length = 160
-  EPOCH = 30
-  CLASS_NAMES =list(df.dialect.unique())
-  NUMBER_OF_CLASSES = len(CLASS_NAMES)
-  trunc_type = 'post' 
-  padding_type = 'post'
-  OOV_tok = '<OoV>'
-
-  X, y  = LogisticRegression.modelPreporcess(df)
-
-
-  X_train,X_val, X_test,y_train, y_val, y_test = LogisticRegression.model_Split(X, y)
-
-  w2v_weights, vocab_size, embedding_size= BILSTM.word2vec(X_train)
-
-
-  tokenizer= BILSTM.tokenizer_fit(X_train,vocab_size)
+  WORDSMODEL ="../model/word2vec_twitter_Model.model"
+  DATAPATH = "../data/balance_data.txt"
+  MODELPATH= "../model/lstm"
   
-  train_padded=  BILSTM.tokenizer_transform(X_train, tokenizer, max_length,padding_type )
-  val_padded=BILSTM.tokenizer_transform(X_val, tokenizer, max_length,padding_type )
-  test_padded=BILSTM.tokenizer_transform(X_test, tokenizer, max_length,padding_type )
+  try:
+    modle = pickle.load(MODELPATH, 'rb')
+  except:  
+    df = pd.read_csv(DATAPATH)
+    df.dropna(inplace=True)
+    NUMWORDS= 20000
+    max_length = 100
+    EPOCH = 30
+    CLASS_NAMES =list(df.dialect.unique())
+    NUMBER_OF_CLASSES = len(CLASS_NAMES)
+    trunc_type = 'post' 
+    padding_type = 'post'
+    OOV_tok = '<OoV>'
 
-  label_tokenizer=  BILSTM.label_tokeniz_fit(y)
+    X, y  = LogisticRegression.modelPreporcess(df)
+    X_train,X_val, X_test,y_train, y_val, y_test = LogisticRegression.model_Split(X, y)
+   
+    tokenizer= BILSTM.tokenizer_fit(X_train,NUMWORDS)
+    embedding_matrix= word2vector.get_embedding(tokenizer= tokenizer)
 
-  train_labels_seq=BILSTM.label_tokeniz_transform(y_train,label_tokenizer )
-  val_labels_seq = BILSTM.label_tokeniz_transform(y_val,label_tokenizer )
-  test_labels_seq = BILSTM.label_tokeniz_transform(y_test,label_tokenizer )
+    train_padded=  BILSTM.tokenizer_transform(X_train, tokenizer, max_length,padding_type )
+    val_padded=BILSTM.tokenizer_transform(X_val, tokenizer, max_length,padding_type )
+    test_padded=BILSTM.tokenizer_transform(X_test, tokenizer, max_length,padding_type )
 
-  model = BILSTM.create_model(vocab_size, embedding_size, max_length, w2v_weights )
-  BILSTM.plotModel(model)
-  print('model ploted')
-  history = model.fit(x= train_padded,y= train_labels_seq, 
-                     validation_data=(val_padded,val_labels_seq), epochs=EPOCH)
+    label_tokenizer=  BILSTM.label_tokeniz_fit(y)
+
+    train_labels_seq=BILSTM.label_tokeniz_transform(y_train,label_tokenizer )
+    val_labels_seq = BILSTM.label_tokeniz_transform(y_val,label_tokenizer )
+    test_labels_seq = BILSTM.label_tokeniz_transform(y_test,label_tokenizer )
+
+    vocab_size = len(tokenizer.word_index) + 1 
+
+    callbacks = [ReduceLROnPlateau(monitor='val_loss', patience=4, cooldown=0),
+             EarlyStopping(monitor='val_accuracy', min_delta=1e-7, patience=8)]
+    model = BILSTM.create_model(vocab_size, embedding_matrix.shape[1], max_length, embedding_matrix)
+    #BILSTM.plotModel(model)
+    #print('model ploted')
+    history = model.fit(x= train_padded,y= train_labels_seq,
+                         callbacks=callbacks,
+                      validation_data=(val_padded,val_labels_seq),
+                      epochs=EPOCH,
+                      batch_size=624
+                      )
+    print("done")
 
 
-  print("done")
-  filePath= "../model/lstm"
-  LogisticRegression.saveModel(filePath, model)
+    LogisticRegression.saveModel(MODELPATH, model)
+"""
 if(__name__ == "__main__"):
     fetech_clean_preprocess()
-    ML() 
-    DL()
+    ML()""" 
+DL()
 
 
 

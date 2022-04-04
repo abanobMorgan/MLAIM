@@ -1,9 +1,5 @@
 import pandas as pd
 import re
-from nltk.corpus import stopwords
-
-
-
 
 
 def getData(text):
@@ -26,7 +22,7 @@ def getData(text):
     file.close()
     return myDic
 
-def removing_http(text):
+def removing_http(text: str)-> str:
     """
     input: 
         text: string  
